@@ -1,4 +1,4 @@
-from googleapiclient.discovery import build
+from googleapiclient.discovery import build # Installer avec 'pip install google-api-python-client'
 from google.oauth2 import service_account
 import json
 
@@ -23,11 +23,15 @@ class google_sheet:
 
 	def read(self, range):
 		""" Lire un range de cellules 
-		range doit être une liste correspondant à la taille du range """
+		range doit être une liste correspondant à la taille du range 
+		Il peut aussi être une str par ex. "A1:B5"
+		"""
 		return self.sheet.values().get(spreadsheetId=self.spreadsheet_id,range=range).execute().get('values', [])
 
 	def write(self, range, data):
-		""" Ecrire des données dans une plage de cellules """
+		""" Ecrire des données dans une plage de cellules 
+			Les données à écrire doivent être une liste ou un tuple à 2 dimentions même s'il n'y a qu'une ligne à écrire
+		"""
 		body = {'values': data}
 		result = self.sheet.values().update(spreadsheetId=self.spreadsheet_id, range=range, valueInputOption="RAW", body=body).execute() #  value_input_option,
 		return f"{result.get('updatedCells')} cells updated."
