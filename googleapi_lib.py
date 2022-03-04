@@ -71,3 +71,53 @@ class google_sheet:
 			})
 		
 		return self.sheet.batchUpdate(spreadsheetId=self.spreadsheet_id, body=request_body).execute()
+
+	def color(self, column_range, row_range, color, sheet_name=0):
+		""" Coloriser un range donné
+			column_range doit être une liste de 2 éléments contenant la première puis la dernière colonne à colorer
+			row_range doit être une liste de 2 éléments contenant la première puis la dernière ligne à colorer
+			le start index doit être de la 1e ligne -1
+			Mettre à None si inutilisé
+			color doit être une liste de 4 éléments contenant les 3 couleurs respectivement (R,G,B, A) valeurs de 0 à 255
+		"""
+		if sheet_name != 0:
+			sheet_name = self.sheetId[sheet_name]
+
+		# Conversion des couleurs 0-255 à 0-1
+		converted_colors = [item/255 for item in color]
+
+
+		request_body = {
+			"requests":[
+				{
+			      "repeatCell": 
+			      {
+			        "range": 
+			        {
+			          "sheetId": sheet_name,
+			          "startRowIndex": row_range[0],
+			          "endRowIndex": row_range[1],
+			          "startColumnIndex": column_range[0],
+			          "endColumnIndex": column_range[1]
+			        },
+			        "cell": 
+			    	{
+			    	"userEnteredFormat"	: 
+			    		{
+			    			 "backgroundColor": 
+			                  {
+			                    "red": converted_colors[0],
+			                    "green": converted_colors[1],
+			                    "blue": converted_colors[2],
+			                    "alpha": converted_colors[3],
+			                  }
+			    		}
+			    	},
+			    	"fields":"userEnteredFormat.backgroundColor",
+			       
+			      }
+			    }
+			  ]
+			}
+
+		return self.sheet.batchUpdate(spreadsheetId=self.spreadsheet_id, body=request_body).execute()
