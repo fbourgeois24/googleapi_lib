@@ -1,3 +1,5 @@
+# Documentation : https://developers.google.com/sheets/api/samples/sheet
+
 from googleapiclient.discovery import build # Installer avec 'pip install google-api-python-client'
 from google.oauth2 import service_account
 import json
@@ -121,3 +123,37 @@ class google_sheet:
 			}
 
 		return self.sheet.batchUpdate(spreadsheetId=self.spreadsheet_id, body=request_body).execute()
+
+	def new_sheet(self, name):
+		""" Création d'un nouvelle feuille """
+		request_body = {"requests":[{"addSheet":{'properties': {'title': name}}}]}
+		self.spreadsheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=request_body).execute()
+		self.read_sheets_id()
+
+	def delete_sheet(self, sheet_id):
+		""" Suppression d'une feuille """
+		request_body = {"requests":[{"deleteSheet":{'sheetId': sheet_id}}]}
+		self.spreadsheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=request_body).execute()
+
+	def hide_column(self,sheet_name, range):
+		""" cacher une colonne """
+
+		sheet_id = self.sheets[sheet_name]
+
+		requests = [{
+			'updateDimensionProperties': {
+			"range": {
+			  "sheetId": sheet_id,
+			  "dimension": 'COLUMNS',
+			  "startIndex": range[0],
+			  "endIndex": range[1],
+			},
+			"properties": {
+			  "hiddenByUser": True,
+			},
+			"fields": 'hiddenByUser',
+			}}]
+
+		body = {'requests': requests}
+
+		return self.spreadsheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=body).execute()
