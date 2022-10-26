@@ -17,11 +17,11 @@ class google_sheet:
 		self.sheet = build('sheets', 'v4', credentials=self.credentials).spreadsheets()
 		self.spreadsheet_id = spreadsheet_id
 
-		# Récupération des sheetId
+		# Récupération des sheet_id
 		list_id = self.sheet.get(spreadsheetId=self.spreadsheet_id).execute()
-		self.sheetId = {}
+		self.sheet_id = {}
 		for item in list_id["sheets"]:
-			self.sheetId[item["properties"]["title"]] = item["properties"]["sheetId"]
+			self.sheet_id[item["properties"]["title"]] = item["properties"]["sheetId"]
 
 	def read(self, range):
 		""" Lire un range de cellules 
@@ -44,7 +44,7 @@ class google_sheet:
 		column_range et row_range sont des listes ou tuples contenant le début et la fin du range à modifier
 		"""
 		if sheet_name != 0:
-			sheet_name = self.sheetId[sheet_name]
+			sheet_name = self.sheet_id[sheet_name]
 
 		request_body = {"requests":[]}
 
@@ -83,7 +83,7 @@ class google_sheet:
 			color doit être une liste de 4 éléments contenant les 3 couleurs respectivement (R,G,B, A) valeurs de 0 à 255
 		"""
 		if sheet_name != 0:
-			sheet_name = self.sheetId[sheet_name]
+			sheet_name = self.sheet_id[sheet_name]
 
 		# Conversion des couleurs 0-255 à 0-1
 		converted_colors = [item/255 for item in color]
@@ -127,13 +127,13 @@ class google_sheet:
 	def new_sheet(self, name):
 		""" Création d'un nouvelle feuille """
 		request_body = {"requests":[{"addSheet":{'properties': {'title': name}}}]}
-		self.spreadsheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=request_body).execute()
+		self.sheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=request_body).execute()
 		self.read_sheets_id()
 
 	def delete_sheet(self, sheet_id):
 		""" Suppression d'une feuille """
 		request_body = {"requests":[{"deleteSheet":{'sheetId': sheet_id}}]}
-		self.spreadsheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=request_body).execute()
+		self.sheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=request_body).execute()
 
 	def hide_column(self,sheet_name, range):
 		""" cacher une colonne """
