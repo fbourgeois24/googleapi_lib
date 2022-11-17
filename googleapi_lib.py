@@ -17,6 +17,9 @@ class google_sheet:
 		self.sheet = build('sheets', 'v4', credentials=self.credentials).spreadsheets()
 		self.spreadsheet_id = spreadsheet_id
 
+		self.read_sheets_id()
+
+	def read_sheets_id(self):
 		# Récupération des sheet_id
 		list_id = self.sheet.get(spreadsheetId=self.spreadsheet_id).execute()
 		self.sheet_id = {}
