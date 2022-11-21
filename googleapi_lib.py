@@ -141,12 +141,10 @@ class google_sheet:
 	def hide_column(self,sheet_name, range):
 		""" cacher une colonne """
 
-		sheet_id = self.sheets[sheet_name]
-
 		requests = [{
 			'updateDimensionProperties': {
 			"range": {
-			  "sheetId": sheet_id,
+			  "sheetId": self.sheet_id[sheet_name],
 			  "dimension": 'COLUMNS',
 			  "startIndex": range[0],
 			  "endIndex": range[1],
@@ -159,4 +157,4 @@ class google_sheet:
 
 		body = {'requests': requests}
 
-		return self.spreadsheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=body).execute()
+		return self.sheet.batchUpdate(spreadsheetId=self.spreadsheet_id,body=body).execute()
