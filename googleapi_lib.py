@@ -33,12 +33,15 @@ class google_sheet:
 		"""
 		return self.sheet.values().get(spreadsheetId=self.spreadsheet_id,range=range).execute().get('values', [])
 
-	def write(self, range, data):
+	def write(self, range, data, value_input_option="USER_ENTERED"):
 		""" Ecrire des données dans une plage de cellules 
 			Les données à écrire doivent être une liste ou un tuple à 2 dimentions même s'il n'y a qu'une ligne à écrire
+			value_input_option : de quelle manière vont être interprêtées les données
+				- RAW : tout est inséré en texte
+				- USER_ENTERED : tel qu'indiqué (date, nombre, formule, ...)
 		"""
 		body = {'values': data}
-		result = self.sheet.values().update(spreadsheetId=self.spreadsheet_id, range=range, valueInputOption="RAW", body=body).execute() #  value_input_option,
+		result = self.sheet.values().update(spreadsheetId=self.spreadsheet_id, range=range, valueInputOption=value_input_option, body=body).execute() #  value_input_option,
 		return f"{result.get('updatedCells')} cells updated."
 
 	def auto_fit(self, sheet_name=0, column_range=None, row_range=None):
@@ -85,8 +88,10 @@ class google_sheet:
 			Mettre à None si inutilisé
 			color doit être une liste de 4 éléments contenant les 3 couleurs respectivement (R,G,B, A) valeurs de 0 à 255
 		"""
-		if sheet_name != 0:
+		if type(sheet_name) != int:
 			sheet_name = self.sheet_id[sheet_name]
+		else:
+			sheet_name = list(self.sheet_id.values())[sheet_name]
 
 		# Conversion des couleurs 0-255 à 0-1
 		converted_colors = [item/255 for item in color]
